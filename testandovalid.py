@@ -1,6 +1,13 @@
 import os
 from validacoes import *
 import pickle
+import turtle
+import os
+from time import sleep
+
+
+
+
 
 def menu():
     print("=="*30)
@@ -46,7 +53,10 @@ def gravdados(dicidados):
     dadoslist.close()
 
 dicidados = visudados()
+
+
 def regdados():
+    lista = []
     print('Programa para validação de dados')
     while True:
         nome = input('Digite o seu nome: ')
@@ -54,14 +64,14 @@ def regdados():
             break
         else:
             print('Nome inválido')
-            return False
+
     while True:
         idade = input("Digite sua idade: ")
         if validnum(idade):
             break
         else:
             print("Idade inválida!")
-            return False
+
     while True:
         
         gênero = input("Digite seu gênero [M/F/O]: ").strip().upper()
@@ -82,7 +92,8 @@ def regdados():
         cpf = input('Digite seu cpf: ')
         if cadastrocpf(cpf):
             if cpf not in dicidados:
-                dicidados[cpf] = [nome, idade, gênero]
+                lista.append(nome, idade, gênero)
+                dicidados[cpf] = lista
                 print('Dados salvos com sucesso!')
                 gravdados(dicidados)
                 break
@@ -97,40 +108,93 @@ def dadosvisu():
     print('Vamos visualizar seus dados!')
     print('=='*30)
     cpf = input("Digite seu cpf: ")
-    while True:
-        if cpf not in dicidados:
-            print('CPF não encontrado!')
-            cpf = input("Digite seu cpf: ")
-        else:
-            print('CPF encontrado!')
-            print(dicidados[cpf])
-            break
-        input("Aperte qualquer tecla para continuar!: ")
-    menu()
+
+    if cadastrocpf(cpf):
+        while True:
+            if cpf in dicidados:
+                print('CPF encontrado!')
+                print(dicidados[cpf])
+                break
+            else: 
+                print('CPF não encontrado!')
+                continuar = input('Você quer conntinuar [S/N]: ')
+                if continuar == 'S':
+                    return cpf
+                if continuar == 'N':
+                    break
+                
+
+        input("Aperta qualquer tecla para sair!")
+        menu()
+    else:
+        print("CPF inválido!")
+        
+
 
 def atuacont():
+    os.system('cls')
     print('=='*30)
     print("Vamos atualizar seus dados!")
     print("=="*30)
     cpf = input("Digite seu cpf: ")
-    while True:
-        if cadastrocpf(cpf):
+    if cadastrocpf(cpf):
+        while True:
             cadastro = ' '
-            cadastro = input('Digite a opção que você deseja alterar: ').upper()
+            cadastro = input('Digite a opção que você deseja alterar: ').upper().strip()
             if cadastro == 'nome'.upper():
                 print("Okay, você deseja alterar seu nome...")
-                nome_novo = input("Por favor, digite o novo nome: ")
+                nome_novo = input("Por favor, digite o novo nome: ").strip()
                 if validstring(nome_novo):
-                    dicidados[cpf][1] = nome_novo
+                    dicidados[cpf][0] = nome_novo
                     print('Nome atualizado com sucesso!')
                     gravdados(dicidados)
-                    break
+                    continuar = input("Deseja continuar atualizando seus dados? [S/N]: ").upper().strip()
+                    if continuar.startswith('S'):
+                        return cadastro
+                    if continuar.startswith('N'):
+                        menu()
+                    else:
+                        print("Opção inválida!")
                 else:
                     print("Nome inválido")
-        else:
-            print("CPF inválido!")
-            return False
-    menu()
+            if cadastro == 'idade'.upper():
+                print("okay, você deseja altrar sua idade...")
+                idade_nova = input("Por favor, digite sua nova idade: ").strip()
+                if validnum(idade_nova):
+                    dicidados[cpf][1] = idade_nova
+                    print('Sua idade foi alterada com sucesso!')
+                    print(f"Sua nova idade é {idade_nova}")
+                    gravdados(dicidados)
+                    continuar = input("Deseja continuar atualizando seus dados? [S/N]: ")
+                    if continuar == 'S':
+                        return cadastro
+                    if continuar == 'N':
+                        exit
+                    else:
+                        print("Opção inválida!")
+                else:
+                    print("Idade inválida!")
+            if cadastro == 'genero'.upper():
+                print("Okay, você deseja alterar seu gênero...")
+                genero_novo = input("Por favor, digite seu novo gênero: ").strip()
+                if validstring(genero_novo):
+                    dicidados[cpf][2] = genero_novo
+                    print("Gênero alterado com sucesso!")
+                    print(f'Seu novo gênero é {genero_novo}')
+                    gravdados(dicidados)
+                    continuar = input("Deseja continuar atualizando seus dados? [S/N]: ")
+                    if continuar == 'S':
+                        return cadastro
+                    if continuar == 'N':
+                        break
+                    else:
+                        print("Opção inválida!")
+                else:
+                    print("Idade inválida!")
+    else:
+        print("CPF inválido!")
+        sleep(1)
+            
 
 
 def deletausu():
